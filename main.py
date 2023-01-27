@@ -1,6 +1,5 @@
 import math
 
-
 def tsp_nn(points):
     # Start at a random point
     current_point = points[0]
