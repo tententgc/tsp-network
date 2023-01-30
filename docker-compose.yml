@@ -5,11 +5,15 @@ services:
     image: debian:latest
     container_name: node1
     hostname: node1
-    # networks:
-    #   default:
-    #     ipv4_address: 192.168.1.5
+    networks:
+      default:
+        ipv4_address: 192.168.1.5
     volumes:
       - ./data:/data
+    dns : 
+      - 8.8.8.8
+      - 4.4.4.4
+      - 192.168.9.45
     tty: true
   
   node2:
