@@ -2,6 +2,6 @@ FROM python:3.9
 
 WORKDIR /app
 
-COPY . .
+COPY . /app
 
-CMD [ "python", "-u", "city.py" ]
+CMD [ "python", "./city.py" ]
