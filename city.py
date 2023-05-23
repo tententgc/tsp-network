@@ -39,10 +39,12 @@ def send_message(city, message):
         s.sendall(message.encode())
 
 # Function to receive message from another city
-def receive_message(city):
+def receive_message():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind((city, 12345))  # Assuming all cities are listening on port 12345
-        s.listen()
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind(("", 12345))  # Bind to port 12345
+        s.listen(1)  # Start listening for incoming connections
+
         conn, addr = s.accept()
         with conn:
             return conn.recv(1024).decode()
@@ -58,4 +60,7 @@ def main():
 
     # Receive results from all other cities
     for city in cities:
-        print(receive_message(city))
+        print(receive_message())
+
+if __name__ == "__main__":
+    main()

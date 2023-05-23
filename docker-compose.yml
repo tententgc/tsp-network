@@ -1,0 +1,39 @@
+version: '3'
+services:
+  city1:
+    build: .
+    volumes:
+      - .:/app
+    networks:
+      tsp_network:
+        ipv4_address: 172.21.0.2
+
+  city2:
+    build: .
+    volumes:
+      - .:/app
+    networks:
+      tsp_network:
+        ipv4_address: 172.21.0.3
+
+  city3:
+    build: .
+    volumes:
+      - .:/app
+    networks:
+      tsp_network:
+        ipv4_address: 172.21.0.4
+
+  city4:
+    build: .
+    volumes:
+      - .:/app
+    networks:
+      tsp_network:
+        ipv4_address: 172.21.0.5
+
+networks:
+  tsp_network:
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
