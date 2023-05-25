@@ -1,39 +1,82 @@
-version: '3'
+version: '3.5'
+
 services:
-  city1:
-    build: .
-    volumes:
-      - .:/app
+  node1:
+    image: node:lts-bullseye
+    container_name: tenten-bfs-n1
+    hostname: tenten-bfs-n1
     networks:
-      tsp_network:
-        ipv4_address: 172.21.0.2
+      bridge0:
+        ipv4_address: 10.5.82.11
+    volumes:
+      - type: bind
+        source: ./source
+        target: /mnt/source
+    cpus: 2.0
+    mem_limit: 1024m
+    memswap_limit: 1024m
+    restart: unless-stopped
+    tty: true
+    logging:
+      driver: none
 
-  city2:
-    build: .
-    volumes:
-      - .:/app
+  node2:
+    image: node:lts-bullseye
+    container_name: tenten-bfs-n2
+    hostname: tenten-bfs-n2
     networks:
-      tsp_network:
-        ipv4_address: 172.21.0.3
+      bridge0:
+        ipv4_address: 10.5.82.12
+    volumes:
+      - type: bind
+        source: ./source
+        target: /mnt/source
+    cpus: 2.0
+    mem_limit: 1024m
+    memswap_limit: 1024m
+    restart: unless-stopped
+    tty: true
+    logging:
+      driver: none
 
-  city3:
-    build: .
-    volumes:
-      - .:/app
+  node3:
+    image: node:lts-bullseye
+    container_name: tenten-bfs-n3
+    hostname: tenten-bfs-n3
     networks:
-      tsp_network:
-        ipv4_address: 172.21.0.4
+      bridge0:
+        ipv4_address: 10.5.82.13
+    volumes:
+      - type: bind
+        source: ./source
+        target: /mnt/source
+    cpus: 2.0
+    mem_limit: 1024m
+    memswap_limit: 1024m
+    restart: unless-stopped
+    tty: true
+    logging:
+      driver: none
 
-  city4:
-    build: .
-    volumes:
-      - .:/app
+  node4:
+    image: node:lts-bullseye
+    container_name: tenten-bfs-n4
+    hostname: tenten-bfs-n4
     networks:
-      tsp_network:
-        ipv4_address: 172.21.0.5
+      bridge0:
+        ipv4_address: 10.5.82.14
+    volumes:
+      - type: bind
+        source: ./source
+        target: /mnt/source
+    cpus: 2.0
+    mem_limit: 1024m
+    memswap_limit: 1024m
+    restart: unless-stopped
+    tty: true
+    logging:
+      driver: none
 
 networks:
-  tsp_network:
-    ipam:
-      config:
-        - subnet: 172.21.0.0/16
+  bridge0:
+    external: true
