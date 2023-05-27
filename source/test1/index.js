@@ -6,39 +6,49 @@ const readline = require("readline").createInterface({
 	output: process.stdout,
 });
 
+// Global paths object
+const paths = {};
+
 // Parse peer's IP address list
 const name = process.argv[2];
-const peers = process.argv[3].split(",");
+const peers = process.argv[3].split("|")[0].split(",");
+const distance_peers = process.argv[3].split("|")[1].split(",");
 const showoutput = false;
+
 // Create socket server (for retrieving broadcast)
 var server = net.createServer((socket) => {
 	// Log connection
 	const remoteDescription = socket.remoteAddress + ":" + socket.remotePort;
 	const remoteTag = "[" + socket.remoteAddress + "] ";
+	console.log();
 	console.log("[SERVER] Incoming socket connection from " + remoteDescription);
 
 	// Add data event handler
 	socket.on("data", (data) => {
-		const payload = data.toString().trim();
-
+		const payload = data.toString().trim().split("|")[0];
+		var distance = Number(data.toString().trim().split("|")[1]);
 		// Log payload information
-		
-		if (payload.split(", ").length + 1 == peers.length+2) {
+
+		if (payload.split(", ").length + 1 == peers.length + 2) {
 			const array = payload.split(", ");
 			const set = new Set(array);
 			if (set.size === array.length && array[0] == name) {
-				console.log("Min path: " + payload + ", " + name);	
+				console.log("path: " + payload + ", " + name + " with distance " + distance);
+
+				// Store path and distance
+				paths[payload + ", " + name] = distance;
+
 				return;
 			}
 			return;
-		}else{
-			if(showoutput){
+		} else {
+			if (showoutput) {
 				console.log(remoteTag + "Recieved payload: " + payload + ", " + name);
 			}
 		}
 		// Check if payload already passed through current node
 		if (payload.split(", ").includes(name)) {
-			if(showoutput){
+			if (showoutput) {
 				console.log(remoteTag + "Repeated routing, discarded!");
 			}
 			return;
@@ -46,7 +56,7 @@ var server = net.createServer((socket) => {
 
 		// Append payload with node name
 		const appended = payload + ", " + name;
-		if(showoutput){
+		if (showoutput) {
 			console.log(remoteTag + "Appended payload: " + appended);
 		}
 
@@ -55,9 +65,8 @@ var server = net.createServer((socket) => {
 			const client = new net.Socket();
 			client.connect(1337, peer, () => {
 				console.log(remoteTag + "Connected to " + peer);
-				client.write(appended);
+				client.write(appended + "|" + (distance + Number(distance_peers[peers.indexOf(peer)])));
 				console.log(remoteTag + "Writing with " + appended);
-
 				client._destroy(null, () => {
 					console.log(remoteTag + "Disconnected from " + peer);
 				});
@@ -66,27 +75,47 @@ var server = net.createServer((socket) => {
 	});
 });
 
+// Compute minimum path with distance
+function getMinPath() {
+	let minDistance = Infinity;
+	let minPath = null;
+	for (let path in paths) {
+		if (paths[path] < minDistance) {
+			minDistance = paths[path];
+			minPath = path;
+		}
+	}
+	if (minPath) {
+		console.log(`Min path is: ${minPath} with distance ${minDistance}`);
+	} else {
+		console.log("No path found");
+	}
+}
+
+
 const prompt = async () => {
-	readline.question("> ", (peer) => {
-		if(peer == "run") {
-		peers.forEach((peer) => {
-			if (peer == "") {
-				prompt();
-				return;
-			}
-			const client = new net.Socket();
-			client.connect(1337, peer, () => {
-				console.log("[CLIENT] Connected to " + peer);
-				client.write(name);
-				console.log("[CLIENT] Writing with " + name);
-				client._destroy(null, () => {
-					console.log("[CLIENT] Disconnected from " + peer);
+	readline.question("> ", (command) => {
+		if (command == "run") {
+			peers.forEach((peer) => {
+				if (peer == "") {
+					prompt();
+					return;
+				}
+				const client = new net.Socket();
+				client.connect(1337, peer, () => {
+					console.log("[CLIENT] Connected to " + peer);
+					client.write(name + "|" + distance_peers[peers.indexOf(peer)]);
+					console.log("[CLIENT] Writing with " + name);
+					client._destroy(null, () => {
+						console.log("[CLIENT] Disconnected from " + peer);
+					});
 				});
 			});
 			prompt();
-		})
-	}
- 	});
+		} else if (command == "minpath") {
+			getMinPath();
+		}
+	});
 };
 
 prompt();
