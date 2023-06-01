@@ -66,7 +66,14 @@ This repository is for the tsp-network project. This project uses Docker to crea
      ```
 ## Output
 - Terminal 1
-  [
+  ![node1](assets/node1.png)
+- Terminal 2
+  ![node2](assets/node2.png)
+ - Terminal 3
+  ![node3](assets/node3.png)
+ - Terminal 4
+  ![node4](assets/node4.png)
+ 
 
 ## License
 
